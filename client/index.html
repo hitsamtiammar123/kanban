@@ -6,9 +6,19 @@
     <title>Kanban</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/swal.min.js"></script>
+    
 </head>
 <body>
-        <div class="container mt-4 ml-3 d-flex">
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand">Kanban Hehe</a>
+        <form class="form-inline">
+            <button class="btn btn-outline-danger my-2 my-sm-0" type="button">Logout</button>
+        </form>
+    </nav>
+    <div class="container mt-1 mb-4 ml-3 d-flex">
             <div class="col-sm-4 kanban-card">
                 <div class="card">
                     <div class="card-header">
@@ -114,28 +124,9 @@ Lorem ipsum dolor sit, amet consectetur adipisicing elit. Delectus porro aperiam
                     </div>
                 </div>
             </div>
-            <div class="col-sm-4 kanban-card">
-                <div class="card">
-                    <div class="card-header">
-                        Done
-                    </div>
-                    <div class="card-body">
-                        <div class="kanban-text">
-                            Contoh Paragraph
-                        </div>
-                        <div class="kanban-text">
-                            Contoh Paragraph 2 JASJASJ
-                            DSAKLJSDKA
-                        </div>
-                        <div class="kanban-text">
-                            Lalalalaal
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <a href="/" class="add-card-link">Add a card...</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+       
+
+    </div>
+    <script src="/js/kanban.js"></script>
 </body>
 </html>
