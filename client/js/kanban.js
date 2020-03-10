@@ -1,5 +1,3 @@
-$(document).ready(function(){
-
     $('.add-card-link').click(function(e){
         e.preventDefault()
         swal({
@@ -61,4 +59,3 @@ $(document).ready(function(){
             }
         })
     })
-})
