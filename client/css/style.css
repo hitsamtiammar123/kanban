@@ -57,3 +57,16 @@ body{
 .kanban-body{
     overflow: auto;
 }
+
+#login-content{
+    margin-top:5vh;
+}
+
+#login-form{
+    width: 20%;
+    border: 1px solid gray;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 5px 10px 18px #888888;
+    height: 280px;
+}
