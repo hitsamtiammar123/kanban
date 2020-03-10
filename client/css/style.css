@@ -58,15 +58,15 @@ body{
     overflow: auto;
 }
 
-#login-content{
+#login-content,#register-content{
     margin-top:5vh;
 }
 
-#login-form{
+
+#login-form,#register-form{
     width: 20%;
     border: 1px solid gray;
     padding: 20px;
     border-radius: 20px;
     box-shadow: 5px 10px 18px #888888;
-    height: 280px;
 }

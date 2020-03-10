@@ -14,7 +14,7 @@
     new Vue({
         el:'#app',
         data:{
-            currentView:'kanban'
+            currentView:'login'
         },
         methods:{
             loadView:function(view){

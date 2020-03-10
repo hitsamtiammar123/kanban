@@ -11,6 +11,11 @@
         template:'#login-page'
     });
 
+    Vue.component('register',{
+        template:'#register-page'
+    });
+
+
     Vue.component('kanban',{
         template:'#kanban-page',
         data:function(){
