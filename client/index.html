@@ -9,21 +9,22 @@
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/swal.min.js"></script>
-    <script src="/js/vue.min.js"></script>
+    <script src="/js/vue.js"></script>
+    <script src="/js/axios.min.js"></script>
     
 </head>
 <body>
     <!-- <div id="app"></div> -->
     <div id="app">
-        <navbar v-on:logout="loadView('login')"></navbar>
+        <navbar v-on:logout="logout"></navbar>
         <component :is="currentView" v-on:change-view="loadView"></component>
     </div>
 
     <template id="kanban-page">
         <div class="container mt-5 mb-4 ml-3 d-flex" >
-            <card-content v-for="kanban in listKanban" 
-            v-bind:tasks="kanban.tasks" 
-            v-bind:title="kanban.title" 
+            <card-content v-for="(kanban,title) in listKanban" 
+            v-bind:tasks="kanban" 
+            v-bind:title="title" 
             v-on:add-card="addCard"
             v-on:view-card="viewCard">
             </card-content>
@@ -50,7 +51,7 @@
                     <div class="kanban-text" @click="$emit('view-card',task)" track-by="$index" v-for="task in tasks">{{task.task}}</div>
                 </div>
                 <div class="card-footer">
-                    <a href="" class="add-card-link" v-on:click.prevent="$emit('add-card')">Add a card...</a>
+                    <a class="add-card-link" href="#" v-on:click.prevent="$emit('add-card',title)">Add a card...</a>
                 </div>
             </div>
         </div>
@@ -63,14 +64,14 @@
                 <form>
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="text" id="email" class="form-control">
+                        <input type="text" v-model="email" id="email" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="text" id="password" class="form-control">
+                        <input type="password" v-model="password" id="password" class="form-control">
                     </div>
                     <div class="form-group">
-                        <button v-on:click.prevent="$emit('change-view','kanban')" class="btn btn-success">Submit</button>
+                        <button v-on:click.prevent="login" class="btn btn-success">Submit</button>
                         <a href="" v-on:click.prevent="$emit('change-view','register')" >Click here to register</a>
                     </div>
                 </form>
@@ -86,22 +87,22 @@
                 <form>
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="text" id="email" class="form-control">
+                        <input type="text" v-model="email" id="email" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="name">Name</label>
-                        <input type="text" id="name" class="form-control">
+                        <input type="text" v-model="name" id="name" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="text" id="password" class="form-control">
+                        <input type="password" v-model="password" id="password" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="re-password">Confirm Password</label>
-                        <input type="text" id="re-password" class="form-control">
+                        <input type="password" v-model="repassword" id="re-password" class="form-control">
                     </div>
                     <div class="form-group">
-                        <button v-on:click.prevent="$emit('change-view','kanban')" class="btn btn-success">Submit</button>
+                        <button v-on:click.prevent="register" class="btn btn-success">Submit</button>
                         <a href="" v-on:click.prevent="$emit('change-view','login')" >Click here to login</a>
                     </div>
                 </form>

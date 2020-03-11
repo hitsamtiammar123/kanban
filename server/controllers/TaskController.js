@@ -42,11 +42,11 @@ class TaskController{
     static async update(req,res){
         let decoded=decodeToken(req.headers);
         let userId=decoded.id;
-        let {task,type}=req.body;
+        let body=req.body;
         let taskId=req.params.id;
 
         try{
-            let result=await Task.update({task,type},{where:{id:taskId}});
+            let result=await Task.update(body,{where:{id:taskId}});
             if(result){
                 res.status(200).json({message:'Task has been successfully updated'});
             }
