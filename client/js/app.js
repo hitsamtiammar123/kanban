@@ -35,6 +35,8 @@
             var token=response.data.token;
             TOKEN=token;
             localStorage.setItem('token',token);
+            headers.token=token;
+            app.isLogin=true;
             app.currentView='kanban';
             console.log(self.$root);
 
@@ -157,6 +159,7 @@
                 var $kanbanText=task.task;
                 var _action;
                 var self=this;
+                var editData={};
                 swal({
                     title:'Task Name',
                     text:$kanbanText,
@@ -184,16 +187,24 @@
                           })
                         case 'edit':
                             return swal({
-                                title: 'Demo Form',
-                                content: 'input',
-                                button: {
-                                  text: 'Submit',
-                                  closeModal: false
-                                }
+                                title: 'Please input your task',
+                                content: {
+                                    element:'input',
+                                    attributes:{
+                                        value:$kanbanText
+                                    }
+                                },
+                                button:{
+                                    text: "next",
+                                    closeModal: true,
+                                },
+                                closeOnClickOutside :false,
+                                closeModal:true
                             })
                     }
                 })
-                .then(function(){
+                .then(function(v){
+
                     if(_action==='delete'){
                         var url=SERVER+'/task/'+task.id;
                         return axios({
@@ -204,6 +215,38 @@
                         .then(function(){
                             self.listKanban=[];
                             loadTasks.call(self);
+                        })
+                    }
+                    else if(_action==='edit'){
+                        editData.task=v;
+                        return swal({
+                            title: 'Please input your task type. Accepted values [Back-log, To-Do, Doing, and Done]',
+                            content: {
+                                element:'input'
+                            },
+                            button:{
+                                text: "submit",
+                                closeModal: true,
+                            }
+                        }).then(function(value){
+
+                            const validType=['Back-log','To-Do','Doing','Done'];
+                            if(validType.indexOf(value)!==-1)
+                                editData.type=value;
+                            
+                            editData.task=editData.task?editData.task:$kanbanText;
+                        
+                            var url=SERVER+'/task/'+task.id;
+                            return axios({
+                                method:'PUT',
+                                headers:headers,
+                                data:editData,
+                                url:url
+                            }).then(function(){
+                                self.listKanban=[];
+                                loadTasks.call(self);
+                            })
+                            
                         })
                     }
                 })
@@ -229,7 +272,8 @@
    var app= new Vue({
         el:'#app',
         data:{
-            currentView:'login'
+            currentView:'login',
+            isLogin:false
         },
         methods:{
             loadView:function(view){
@@ -237,6 +281,7 @@
             },
             logout:function(){
                 localStorage.removeItem('token');
+                app.isLogin=false;
                 this.currentView='login';
             }
         }
@@ -244,9 +289,11 @@
     
     if(!TOKEN){
         app.currentView='login';
+        app.isLogin=false;
     }
     else{
         app.currentView='kanban';
+        app.isLogin=true;
     }
 
 
