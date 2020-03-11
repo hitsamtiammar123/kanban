@@ -1,5 +1,5 @@
 const {User}=require('../models');
-const {makeToken}=require('../middleware/token');
+const {makeToken}=require('../helpers/token');
 
 class AuthController{
     static async login(req,res){

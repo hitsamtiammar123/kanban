@@ -10,8 +10,6 @@ module.exports = (sequelize, DataTypes) => {
   Task.init({
     type: DataTypes.ENUM(['Back-log','To-Do','Doing','Done']),
     task: DataTypes.STRING,
-    point: DataTypes.INTEGER,
-    assignedTo: DataTypes.STRING,
     userId:DataTypes.INTEGER
   },{sequelize,modelName:'Task'});
 

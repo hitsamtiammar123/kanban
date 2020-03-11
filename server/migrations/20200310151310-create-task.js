@@ -14,12 +14,6 @@ module.exports = {
       task: {
         type: Sequelize.STRING
       },
-      point: {
-        type: Sequelize.INTEGER
-      },
-      assignedTo: {
-        type: Sequelize.STRING
-      },
       userId: {
         type: Sequelize.INTEGER,
         references: {
