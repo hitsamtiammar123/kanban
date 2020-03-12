@@ -43,20 +43,21 @@
         if(response && response.status===400){
             swal('Login Failed',response.data.message,'error');
         }
-        else{
-            swal('Login failed','An Error occured when login','error')
-        }
+
     }
 
     function onLoginSuccess(self){
         return function(response){
+           
             var token=response.data.token;
-            TOKEN=token;
-            localStorage.setItem('token',token);
+            var user=response.data.user;
             headers.token=token;
+            app.setToken(token);
+            app.setUser(user);
             app.isLogin=true;
             app.currentView='kanban';
-            console.log(self.$root);
+            app.user=response.data.user;
+           
         }
     }
 
@@ -102,6 +103,23 @@
         .catch()
     }
 
+    function updateUser(sentData){
+        axios({
+            method:'PUT',
+            headers:headers,
+            url:SERVER+'/user',
+            data:sentData
+        }).then(function(res){
+            app.currentView='kanban';
+            var data=res.data;
+            app.setUser(data.user);
+        })  
+        .catch(function(err){
+            console.log({err});
+            swal('Update user failed','Error when updating user','error');
+        })
+    }
+
     Vue.component('login',{
         template:'#login-page',
         data:function(){
@@ -130,7 +148,7 @@
                         email:profile.getEmail(),
                         login_token:profile.getId()
                     }
-                    console.log(sentData);
+                   
                     startLoginWithGoogle(sentData,self);
                 }
             }
@@ -333,19 +351,63 @@
         props:['title','tasks']
     });
 
+    Vue.component('profile-page',{
+        template:'#profile-page',
+        data:function(){
+            return {
+                email:'',
+                password:'',
+                name:'',
+                repassword:''
+            }
+        },
+        mounted:function(){
+
+            var user=app.user;
+            this.email=user.email;
+            this.name=user.name;
+            this.password='';
+        },
+        methods:{
+            editProfile:function(){
+                var sentData={}
+
+                this.email?sentData.email=this.email:null;
+                this.name?sentData.name=this.name:null;
+                this.password?sentData.password=this.password:null;
+
+                console.log(sentData);
+                updateUser(sentData);
+            }
+        }
+    })
+
    var app= new Vue({
         el:'#app',
         data:{
             currentView:'login',
             isLogin:false,
-            auth:null
+            auth:null,
+            user:null
+        },
+        created:function(){
+            this.user=JSON.parse(localStorage.getItem('user'));
         },
         methods:{
             loadView:function(view){
                 this.currentView=view;
             },
+            setToken:function(token){
+                TOKEN=token;
+                localStorage.setItem('token',token);
+            },
+            setUser:function(user){
+                localStorage.setItem('user',JSON.stringify(user));
+                this.user=user
+            },
             logout:function(){
                 localStorage.removeItem('token');
+                localStorage.removeItem('user');
                 app.isLogin=false;
                 this.currentView='login';
                 if(this.auth){

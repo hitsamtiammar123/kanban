@@ -17,7 +17,7 @@
 <body>
     <!-- <div id="app"></div> -->
     <div id="app">
-        <navbar v-on:logout="logout"></navbar>
+        <navbar v-on:logout="logout" @kanban="loadView('kanban')" @profile="loadView('profile-page')"></navbar>
         <component :is="currentView" v-on:change-view="loadView"></component>
     </div>
 
@@ -36,7 +36,8 @@
         <nav class="navbar navbar-light bg-light">
             <a class="navbar-brand">Kanban Hehe</a>
             <form class="form-inline">
-                <button class="btn btn-outline-primary my-2 my-sm-0" v-if="$root.isLogin"  type="button">Profile</button>
+                <button class="btn btn-outline-primary my-2 my-sm-0" v-if="$root.isLogin" @click="$emit('profile')"  type="button">Profile</button>
+                <button class="btn btn-outline-success my-2 my-sm-0 ml-2" v-if="$root.isLogin" @click="$emit('kanban')"  type="button">Home</button>
                 <button class="btn btn-outline-danger my-2 my-sm-0 ml-2" v-if="$root.isLogin" @click="$emit('logout')" type="button">Logout</button>
             </form>
         </nav>
@@ -111,6 +112,32 @@
                     </div>
                 </form>
             </div>
+        </div>
+    </template>
+
+    <template id="profile-page">
+        <div class="d-flex mt-4 justify-content-center ">
+            
+            <form @submit.prevent class="col-4 bg-light mt-3 pt-2">
+                <h5>Edit Profile</h5>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" v-model="email" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" v-model="name" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" v-model="password" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="repassword">Re-Password</label>
+                    <input type="password" id="repassword" v-model="repassword" class="form-control">
+                </div>
+                <button class="btn btn-success mb-3" @click="editProfile">Submit</button>
+            </form>
         </div>
     </template>
 

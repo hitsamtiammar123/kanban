@@ -10,6 +10,14 @@ module.exports = (sequelize, DataTypes) => {
       
       return User.findOne({where:{email:email,password:md5(password)}})
     }
+
+    get tokendata(){
+      return {
+        id:this.id,
+        email:this.email,
+        name:this.name
+      }
+    }
   }
 
   User.init({
@@ -29,6 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     user.password = md5(user.password);
   });
   
+
 
   return User;
 };

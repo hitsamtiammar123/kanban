@@ -1,5 +1,6 @@
 const {User}=require('../models');
 const {makeToken}=require('../helpers/token');
+const md5=require('md5');
 
 class AuthController{
     static async login(req,res){
@@ -11,8 +12,9 @@ class AuthController{
                 res.status(400).json({message:'Email or Password is wrong'});
             }
             else{
-                let token=makeToken({id:user.id,email:user.email,name:user.name});
-                return res.status(200).json({token:token});
+                let tokenData=user.tokendata;
+                let token=makeToken(tokenData);
+                return res.status(200).json({token:token,user:tokenData});
             }
 
         }catch(err){
@@ -30,9 +32,9 @@ class AuthController{
             if(!user){
                 user=await User.create({name,email,google_token:login_token,password:'dari_google'});
             }
-
-            let token=makeToken({id:user.id,email:user.email,name:user.name});
-            res.status(200).json({token:token});
+            let tokendata=user.tokendata;
+            let token=makeToken(tokendata);
+            res.status(200).json({token:token,user:tokendata});
 
         }catch(err){
             console.log(err)
@@ -40,6 +42,29 @@ class AuthController{
         }
 
 
+    }
+
+    static async editProfile(req,res){
+        let body=req.body;
+        try{
+            let userId=req.user.id;
+            if(body.password){
+                body.password=md5(body.password);
+            }
+            let result=await User.update(body,{
+                where:{id:userId}
+            })
+            if(result){
+                let user=await User.findByPk(userId);
+                res.status(200).json({message:'user has successfully updated',user:user.tokendata})
+            }
+            else{
+                res.status(400).json({message:'Fail to update user'});
+            }
+        }catch(err){
+            console.log(err);
+            res.status(500).json(err);
+        }
     }
 
     static async register(req,res){
