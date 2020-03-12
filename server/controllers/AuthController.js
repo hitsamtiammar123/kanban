@@ -21,6 +21,27 @@ class AuthController{
 
     }
 
+    static async loginWithGoogle(req,res){
+
+        let {name,email,login_token}=req.body;
+
+        try{
+            let user=await User.findOne({where:{google_token:login_token}});
+            if(!user){
+                user=await User.create({name,email,google_token:login_token,password:'dari_google'});
+            }
+
+            let token=makeToken({id:user.id,email:user.email,name:user.name});
+            res.status(200).json({token:token});
+
+        }catch(err){
+            console.log(err)
+            res.status(500).json(err);
+        }
+
+
+    }
+
     static async register(req,res){
         let {email,name,password}=req.body;
 

@@ -14,24 +14,42 @@
         'token':TOKEN
     };
 
-    function validateRegisterInputs(sentData){
+    function validateRegisterInputs(sentData,err){
         if(!sentData.email){
-
+            err.message='Email must be filled';
+            return false;
         }
+        if(!sentData.password){
+            err.message='Password must be filled';
+            return false;
+        }
+        if(!sentData.name){
+            err.message='Name must be filled';
+            return false;
+        }
+
+        if(sentData.password!==sentData.repassword){
+            err.message='Re-Password is not match';
+            return false;
+        }
+
+        return true;
     }
+    
 
     function onLoginError(err){
         console.log({err})
         var response=err.response;
-        if(response.status===400){
+        if(response && response.status===400){
             swal('Login Failed',response.data.message,'error');
+        }
+        else{
+            swal('Login failed','An Error occured when login','error')
         }
     }
 
-    function startLogin(sentData,self){
-        
-        axios.post(SERVER+'/login',sentData)
-        .then(function(response){
+    function onLoginSuccess(self){
+        return function(response){
             var token=response.data.token;
             TOKEN=token;
             localStorage.setItem('token',token);
@@ -39,9 +57,35 @@
             app.isLogin=true;
             app.currentView='kanban';
             console.log(self.$root);
+        }
+    }
 
-        })
+    function startLogin(sentData,self){
+        
+        axios.post(SERVER+'/login',sentData)
+        .then(onLoginSuccess(self))
         .catch(onLoginError)
+    }
+
+    function startLoginWithGoogle(sentData,self){
+        axios.post(SERVER+'/login/google',sentData)
+        .then(onLoginSuccess(self))
+        .catch(onLoginError)
+    }
+
+    function initGoogleAuth(component,elemID){
+        gapi.load('auth2',function(){
+           component.auth=gapi.auth2.init({
+                client_id: '614517392795-5oq30eghfu0883s8jn5h8ilt84u66c7c.apps.googleusercontent.com',
+                cookiepolicy: 'single_host_origin',
+                // Request scopes in addition to 'profile' and 'email'
+                //scope: 'additional_scope'
+              });
+              //debugger;
+              var elem=document.querySelector(elemID);
+              component.auth.attachClickHandler(elem,{},component.googleSignIn,onLoginError);
+        })
+         
     }
 
     function loadTasks(){
@@ -65,8 +109,12 @@
         data:function(){
             return {
                 email:'',
-                password:''
+                password:'',
+                auth:null
             }
+        },
+        mounted:function(){
+            initGoogleAuth(this,'#btn-google');
         },
         methods:{
             login:function(){
@@ -75,6 +123,18 @@
                     "email":self.email,
                     "password":self.password
                 },self)
+            },
+            googleSignIn:function(googleUser){
+                if(googleUser && googleUser.getBasicProfile){
+                    var profile = googleUser.getBasicProfile();
+                    var sentData={
+                        name:profile.getName(),
+                        email:profile.getEmail(),
+                        login_token:profile.getId()
+                    }
+                    console.log(sentData);
+                    startLoginWithGoogle(sentData,self);
+                }
             }
         }
     });
@@ -96,7 +156,13 @@
                 var sentData={
                     "email":self.email,
                     "password":self.password,
-                    "name":self.name
+                    "name":self.name,
+                    "repassword":self.repassword
+                }
+                var err={};
+                if(!validateRegisterInputs(sentData,err)){
+                    swal('Register failed',err.message,'error');
+                    return;
                 }
 
                 axios.post(SERVER+'/register',sentData)
