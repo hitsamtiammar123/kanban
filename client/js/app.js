@@ -43,7 +43,6 @@
         if(response && response.status===400){
             swal('Login Failed',response.data.message,'error');
         }
-
     }
 
     function onLoginSuccess(self){
