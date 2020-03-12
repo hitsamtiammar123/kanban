@@ -75,15 +75,13 @@
 
     function initGoogleAuth(component,elemID){
         gapi.load('auth2',function(){
-           component.auth=gapi.auth2.init({
+           component.$root.auth=gapi.auth2.init({
                 client_id: '614517392795-5oq30eghfu0883s8jn5h8ilt84u66c7c.apps.googleusercontent.com',
-                cookiepolicy: 'single_host_origin',
-                // Request scopes in addition to 'profile' and 'email'
-                //scope: 'additional_scope'
+                cookiepolicy: 'single_host_origin'
               });
-              //debugger;
+              
               var elem=document.querySelector(elemID);
-              component.auth.attachClickHandler(elem,{},component.googleSignIn,onLoginError);
+              component.$root.auth.attachClickHandler(elem,{},component.googleSignIn,onLoginError);
         })
          
     }
@@ -339,7 +337,8 @@
         el:'#app',
         data:{
             currentView:'login',
-            isLogin:false
+            isLogin:false,
+            auth:null
         },
         methods:{
             loadView:function(view){
@@ -349,6 +348,13 @@
                 localStorage.removeItem('token');
                 app.isLogin=false;
                 this.currentView='login';
+                if(this.auth){
+                    this.auth.signOut().then(function(){
+                        //renderGoogleButton()
+                    });
+                    this.auth.disconnect();
+                }
+                
             }
         }
     });

@@ -3,9 +3,7 @@ const {decodeToken}=require('../helpers/token');
 
 class TaskController{
     static async create(req,res){
-
-        let decoded=decodeToken(req.headers);
-        let userId=decoded.id;
+        let userId=req.user.id;
         let {task,type}=req.body;
 
         try{
@@ -18,8 +16,7 @@ class TaskController{
     }
 
     static async fetchById(req,res){
-        let decoded=decodeToken(req.headers);
-        let userId=decoded.id;
+        let userId=req.user.id;
 
         try{
             let types=['Back-log','To-Do','Doing','Done'];
@@ -40,8 +37,6 @@ class TaskController{
     }
 
     static async update(req,res){
-        let decoded=decodeToken(req.headers);
-        let userId=decoded.id;
         let body=req.body;
         let taskId=req.params.id;
 
@@ -60,8 +55,6 @@ class TaskController{
     }
 
     static async delete(req,res){
-        let decoded=decodeToken(req.headers);
-        let userId=decoded.id;
         let taskId=req.params.id;
 
         try{

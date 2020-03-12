@@ -5,12 +5,12 @@ module.exports=(req,res,next)=>{
     if(!token){
         res.status(400).json({message:'Token is missing'});
     }
-        jwt.verify(token,process.env.JWT_SECRET,function(err){
-            if(err){
-                res.status(401).json({message:'Unathenticated',err:err})
-            }else{
-                next();
-            }
-        });
+    try{
+         req.user=jwt.verify(token,process.env.JWT_SECRET);
+         next();
+    }catch(err){
+        console.log(err);
+        res.status(500).json(err);
+    }
 
 }
