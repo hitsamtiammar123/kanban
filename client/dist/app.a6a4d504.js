@@ -8835,6 +8835,7 @@ exports.default = void 0;
 //
 //
 //
+//
 var _default = {
   name: 'Navbar',
   methods: {}
@@ -8885,6 +8886,17 @@ exports.default = _default;
               }
             },
             [_vm._v("Home")]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.$parent.isLogin
+        ? _c(
+            "button",
+            {
+              staticClass: "btn btn-outline-warning my-2 my-sm-0 ml-2",
+              attrs: { type: "button" }
+            },
+            [_vm._v("Project")]
           )
         : _vm._e(),
       _vm._v(" "),
@@ -10763,7 +10775,7 @@ function onLoginSuccess(self) {
 }
 
 function startLogin(sentData, self) {
-  _axios.default.post(SERVER + '/login', sentData).then(onLoginSuccess(self)).catch(onLoginError);
+  _axios.default.post(SERVER + '/login', sentData).then(onLoginSuccess(self)).catch(onLoginError).finally(onLoginDone(self));
 }
 
 function login() {
@@ -10772,10 +10784,17 @@ function login() {
     "email": self.email,
     "password": self.password
   }, self);
+  self.isLoggingIn = true;
+}
+
+function onLoginDone(self) {
+  return function () {
+    self.isLoggingIn = false;
+  };
 }
 
 function startLoginWithGoogle(sentData, self) {
-  _axios.default.post(SERVER + '/login/google', sentData).then(onLoginSuccess(self)).catch(onLoginError);
+  _axios.default.post(SERVER + '/login/google', sentData).then(onLoginSuccess(self)).catch(onLoginError).finally(onLoginDone(self));
 }
 
 function googleSignIn(googleUser) {
@@ -10789,6 +10808,7 @@ function googleSignIn(googleUser) {
       login_token: profile.getId()
     };
     startLoginWithGoogle(sentData, self);
+    self.isLoggingIn = true;
   }
 }
 
@@ -10809,7 +10829,8 @@ var _default = {
     return {
       email: '',
       password: '',
-      auth: null
+      auth: null,
+      isLoggingIn: false
     };
   },
   mounted: function mounted() {
@@ -10908,7 +10929,11 @@ exports.default = _default;
             _c("div", { staticClass: "form-group" }, [
               _c(
                 "button",
-                { staticClass: "btn btn-success", on: { click: _vm.login } },
+                {
+                  staticClass: "btn btn-success",
+                  attrs: { disabled: _vm.isLoggingIn },
+                  on: { click: _vm.login }
+                },
                 [_vm._v("Submit")]
               ),
               _vm._v(" "),
@@ -10927,27 +10952,23 @@ exports.default = _default;
               )
             ]),
             _vm._v(" "),
-            _vm._m(0)
+            _c("div", { staticClass: "form-group" }, [
+              _c(
+                "button",
+                {
+                  staticClass: "btn btn-primary",
+                  attrs: { disabled: _vm.isLoggingIn, id: "btn-google" }
+                },
+                [_vm._v("Sign In with google")]
+              )
+            ])
           ]
         )
       ])
     ]
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group" }, [
-      _c(
-        "button",
-        { staticClass: "btn btn-primary", attrs: { id: "btn-google" } },
-        [_vm._v("Sign In with google")]
-      )
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
           return {
@@ -11022,6 +11043,7 @@ function onError(err) {
   console.log({
     err: err
   });
+  swal('warning', 'Register failed', 'error');
 }
 
 function onLoginError(err) {
@@ -11036,7 +11058,13 @@ function onLoginError(err) {
 }
 
 function startLogin(sentData, self) {
-  _axios.default.post(SERVER + '/login', sentData).then(onLoginSuccess(self)).catch(onLoginError);
+  _axios.default.post(SERVER + '/login', sentData).then(onLoginSuccess(self)).catch(onLoginError).finally(onDone(self));
+}
+
+function onDone(self) {
+  return function () {
+    self.isRegistering = false;
+  };
 }
 
 function onLoginSuccess(self) {
@@ -11044,11 +11072,14 @@ function onLoginSuccess(self) {
     var token = response.data.token;
     var user = response.data.user;
     headers.token = token;
-    var root = self.$root;
-    self.$emit('set-token', token);
-    self.$emit('set-user', user);
-    self.$emit('set-login', true);
-    self.$emit('change-view', 'Kanban');
+    var app = self.$parent;
+
+    if (app) {
+      app.setToken(token);
+      app.setUser(user);
+      app.isLogin = true;
+      app.currentView = 'Kanban';
+    }
   };
 }
 
@@ -11078,7 +11109,6 @@ function validateRegisterInputs(sentData, err) {
 
 function register() {
   var self = this;
-  debugger;
   var sentData = {
     "email": self.email,
     "password": self.password,
@@ -11101,6 +11131,8 @@ function register() {
       password: password
     }, self);
   }).catch(onError);
+
+  self.isRegistering = true;
 }
 
 var _default = {
@@ -11109,7 +11141,8 @@ var _default = {
       email: '',
       password: '',
       name: '',
-      repassword: ''
+      repassword: '',
+      isRegistering: false
     };
   },
   methods: {
@@ -11265,6 +11298,7 @@ exports.default = _default;
                   "button",
                   {
                     staticClass: "btn btn-success",
+                    attrs: { disabled: _vm.isRegistering },
                     on: {
                       click: function($event) {
                         $event.preventDefault()
@@ -20929,7 +20963,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
-var socket = _socket.default.connect('https://nameless-harbor-02268.herokuapp.com');
+var hosting = 'https://nameless-harbor-02268.herokuapp.com';
+var local = 'http://localhost:3000';
+
+var socket = _socket.default.connect(hosting);
 
 function loadTasks() {
   var self = this;
@@ -21710,7 +21747,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61927" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51934" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

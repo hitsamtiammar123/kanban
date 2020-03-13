@@ -12,11 +12,11 @@
                         <input type="password" v-model="password" id="password" class="form-control">
                     </div>
                     <div class="form-group">
-                        <button v-on:click="login" class="btn btn-success">Submit</button>
+                        <button v-on:click="login" :disabled="isLoggingIn" class="btn btn-success">Submit</button>
                         <a href="#" v-on:click.prevent="$emit('change-view','register')" >Click here to register</a>
                     </div>
                     <div class="form-group">
-                        <button class="btn btn-primary" id="btn-google">Sign In with google</button>
+                        <button class="btn btn-primary" :disabled="isLoggingIn" id="btn-google">Sign In with google</button>
                     </div>
                 </form>
             </div>
@@ -57,6 +57,7 @@
         axios.post(SERVER+'/login',sentData)
         .then(onLoginSuccess(self))
         .catch(onLoginError)
+        .finally(onLoginDone(self))
     }
 
     function login(){
@@ -65,12 +66,20 @@
         "email": self.email,
         "password": self.password
         }, self)
+        self.isLoggingIn=true;
+    }
+
+    function onLoginDone(self){
+        return function(){
+            self.isLoggingIn=false;
+        }
     }
 
     function startLoginWithGoogle(sentData,self){
         axios.post(SERVER+'/login/google',sentData)
         .then(onLoginSuccess(self))
         .catch(onLoginError)
+        .finally(onLoginDone(self))
     }
 
     function googleSignIn(googleUser){
@@ -83,6 +92,7 @@
                 login_token: profile.getId()
             }
             startLoginWithGoogle(sentData, self);
+            self.isLoggingIn=true;
         }
     }
 
@@ -105,7 +115,8 @@
             return {
                 email:'',
                 password:'',
-                auth:null
+                auth:null,
+                isLoggingIn:false
             }
         },
         mounted:function(){

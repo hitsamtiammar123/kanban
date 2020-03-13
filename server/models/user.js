@@ -30,7 +30,9 @@ module.exports = (sequelize, DataTypes) => {
 
   User.associate = function(models) {
     // associations can be defined here
-    User.hasMany(models.Task,{foreignKey:'userId'})
+    User.hasMany(models.Task,{foreignKey:'userId'});
+    User.hasMany(models.Project,{foreignKey:'projectId'});
+    User.belongsToMany(models.Project,{as:'ProjectMember',through:'ProjectMembers',foreignKey:'projectId'})
   };
 
   User.addHook('beforeCreate', (user, options) => {

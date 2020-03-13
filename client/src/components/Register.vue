@@ -20,7 +20,7 @@
                         <input type="password" v-model="repassword" id="re-password" class="form-control">
                     </div>
                     <div class="form-group">
-                        <button v-on:click.prevent="register" class="btn btn-success">Submit</button>
+                        <button v-on:click.prevent="register" :disabled="isRegistering" class="btn btn-success">Submit</button>
                         <a href="#" v-on:click.prevent="$emit('change-view','login')">Click here to login</a>
                     </div>
                 </form>
@@ -33,9 +33,10 @@
 
     function  onError(err){
         console.log({err});
+        swal('warning','Register failed','error');
     }
 
-        function onLoginError(err){
+    function onLoginError(err){
         console.log({err})
         var response=err.response;
         if(response && response.status===400){
@@ -48,6 +49,13 @@
         axios.post(SERVER+'/login',sentData)
         .then(onLoginSuccess(self))
         .catch(onLoginError)
+        .finally(onDone(self));
+    }
+
+    function onDone(self){
+        return function(){
+            self.isRegistering=false;
+        }
     }
 
     function onLoginSuccess(self){
@@ -56,12 +64,14 @@
             var token=response.data.token;
             var user=response.data.user;
             headers.token=token;
-            var root=self.$root;
-            
-            self.$emit('set-token',token);
-            self.$emit('set-user',user);
-            self.$emit('set-login',true);
-            self.$emit('change-view','Kanban');
+            var app=self.$parent;
+           
+            if(app){
+                app.setToken(token);
+                app.setUser(user);
+                app.isLogin=true;
+                app.currentView='Kanban';
+            }
         }
     }
 
@@ -89,7 +99,6 @@
 
     function register(){
         var self = this;
-        debugger;
         var sentData = {
             "email": self.email,
             "password": self.password,
@@ -112,6 +121,9 @@
             }, self);
         })
         .catch(onError)
+        
+
+        self.isRegistering=true;
     }
 
     export default {
@@ -120,7 +132,8 @@
                 email: '',
                 password: '',
                 name: '',
-                repassword: ''
+                repassword: '',
+                isRegistering:false
             }
         },
         methods:{
