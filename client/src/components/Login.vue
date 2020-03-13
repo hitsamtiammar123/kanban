@@ -41,26 +41,13 @@
             var user=response.data.user;
             headers.token=token;
             var app=self.$parent;
-            // console.log({app,root,set:app.isLogin});
-            //if(self.$emit){
-                // self.$emit('set-token',token);
-                // self.$emit('set-user',user);
-                // self.$emit('set-login',true);
-                // self.$emit('change-view','Kanban');
+           
+            if(app){
                 app.setToken(token);
                 app.setUser(user);
                 app.isLogin=true;
                 app.currentView='Kanban';
-            // }
-            // else{
-            //     app.setToken(token);
-            //     app.setUser(user);
-            //     app.isLogin=true;
-            //     app.currentView='Kanban';
-            //     // app.user=response.data.user;
-            // }
-
-           
+            }
         }
     }
 
@@ -102,7 +89,7 @@
     function initGoogleAuth(component,elemID){
         gapi.load('auth2',function(){
            component.$root.auth=gapi.auth2.init({
-                client_id: '614517392795-nh3cgg2q0da5u8ab8nkbp8ju9cj9r4hs.apps.googleusercontent.com',
+                client_id: '614517392795-838eqn9f4hjf05m1nfl5ic9o80sua6r7.apps.googleusercontent.com',
                 cookiepolicy: 'single_host_origin'
               });
               
