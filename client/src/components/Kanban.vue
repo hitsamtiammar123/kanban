@@ -13,7 +13,7 @@
     import CardContent from './CardContent';
     import io from 'socket.io-client';
 
-    var socket = io.connect(SERVER);
+    var socket = io.connect('https://nameless-harbor-02268.herokuapp.com');
 
     function loadTasks(){
         var self=this;

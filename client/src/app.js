@@ -4,6 +4,7 @@ import Vue from 'vue';
 
 const local='http://localhost:3000';
 const hosting='https://nameless-harbor-02268.herokuapp.com';
+// debugger;
 window.SERVER=hosting;
 window.TOKEN=localStorage.getItem('token');
 window.headers={

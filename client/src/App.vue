@@ -75,6 +75,7 @@
                 localStorage.removeItem('user');
                 this.isLogin=false;
                 this.currentView='login';
+               
                 if(this.auth){
                     this.auth.signOut().then(function(){
                         //renderGoogleButton()

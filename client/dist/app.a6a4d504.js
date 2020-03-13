@@ -20929,7 +20929,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
-var socket = _socket.default.connect(SERVER);
+var socket = _socket.default.connect('https://nameless-harbor-02268.herokuapp.com');
 
 function loadTasks() {
   var self = this;
@@ -21668,8 +21668,9 @@ var _vue = _interopRequireDefault(require("vue"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var local = 'http://localhost:3000';
-var hosting = 'https://nameless-harbor-02268.herokuapp.com';
-window.SERVER = local;
+var hosting = 'https://nameless-harbor-02268.herokuapp.com'; // debugger;
+
+window.SERVER = hosting;
 window.TOKEN = localStorage.getItem('token');
 window.headers = {
   'Content-Type': 'application/json',
@@ -21709,7 +21710,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55359" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61927" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
