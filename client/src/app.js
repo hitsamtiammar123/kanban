@@ -2,7 +2,9 @@ import App from './App.vue'
 import './style.css';
 import Vue from 'vue';
 
-window.SERVER='https://nameless-harbor-02268.herokuapp.com';
+const local='http://localhost:3000';
+const hosting='https://nameless-harbor-02268.herokuapp.com';
+window.SERVER=local;
 window.TOKEN=localStorage.getItem('token');
 window.headers={
     'Content-Type':'application/json',

@@ -11,6 +11,9 @@
 <script>
     import axios from 'axios';
     import CardContent from './CardContent';
+    import io from 'socket.io-client';
+
+    var socket = io.connect(SERVER);
 
     function loadTasks(){
         var self=this;
@@ -23,7 +26,7 @@
            
             var data=response.data;
             self.listKanban=data;
-            console.log(self);
+            //console.log('listKanban',self.listKanban);
         })
         .catch(function(err){
             console.log('Ada error',err);
@@ -49,10 +52,11 @@
             };
             return axios.post(url, sentData, {
                 headers: headers
-            })
+            });
         }).then(function(result) {
             if (!result)
                 return;
+            socket.emit('task-added',result.data);
             self.listKanban = [];
             loadTasks.call(self);
         }).catch(function(err) {
@@ -112,13 +116,14 @@
             if (_action === 'delete') {
             var url = SERVER + '/task/' + task.id;
             return axios({
-                method: 'DELETE',
-                headers: headers,
-                url: url
+                    method: 'DELETE',
+                    headers: headers,
+                    url: url
                 })
                 .then(function() {
-                self.listKanban = [];
-                loadTasks.call(self);
+                    socket.emit('task-deleted',task);
+                    self.listKanban = [];
+                    loadTasks.call(self);
                 })
             } else if (_action === 'edit') {
             editData.task = v;
@@ -138,13 +143,14 @@
                 editData.task = editData.task ? editData.task : $kanbanText;
                 var url = SERVER + '/task/' + task.id;
                 return axios({
-                method: 'PUT',
-                headers: headers,
-                data: editData,
-                url: url
+                    method: 'PUT',
+                    headers: headers,
+                    data: editData,
+                    url: url
                 }).then(function() {
-                self.listKanban = [];
-                loadTasks.call(self);
+                    socket.emit('task-updated',task);
+                    self.listKanban = [];
+                    loadTasks.call(self);
                 })
             })
             }
@@ -157,6 +163,7 @@
         })
     }
 
+    
 
     export default {
         data:function(){
@@ -166,6 +173,27 @@
         },
         created:function(){
             loadTasks.call(this);
+        },
+        mounted:function(){
+            var self=this;
+            socket.on('broadcast-task',function(result){
+                console.log('brod',result);
+                var type=result.type;
+                self.listKanban[type].push(result);
+               //self.listKanban.push(result);
+            });
+
+            socket.on('broadcast-task-deleted',function(result){
+                var id=result.id;
+                var type=result.type;
+                var deletedIndex=self.listKanban[type].findIndex((curr)=>curr.id==id);
+                self.listKanban[type].splice(deletedIndex,1);
+            });
+
+            socket.on('broadcast-task-updated',function(result){
+                self.listKanban = [];
+                loadTasks.call(self);
+            })
         },
         components:{
             CardContent
